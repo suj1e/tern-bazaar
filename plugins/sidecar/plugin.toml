@@ -1,0 +1,7 @@
+schema = 1
+id = "sidecar"
+name = "Sidecar"
+version = "1.0.0"
+description = "Keep a companion shell beside your work and move between the pair without opening duplicates."
+icon = "terminal"
+window = "window.luau"
