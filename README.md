@@ -46,7 +46,7 @@ All generated local page and asset links include that prefix. The default/custom
 
 ### What the checks exercise
 
-Node's built-in test runner parses the real TOML and README metadata, validates actual entry and documentation files, and renders HTML for root and project-path deployments. DOM-based tests check page structure, control names and labels, internal links and anchors, assets, copy-command values and package facts. Temporary package fixtures exercise missing entries, unknown manifest keys, traversal and symlink escapes, invalid versions, incorrect install sources, conflicting identities, unsafe documentation URLs and missing local resources. Rendering escapes raw README HTML.
+Node's built-in test runner parses real TOML and README metadata, validates entry and documentation files, and renders HTML for root and project-path deployments. DOM-based tests check page structure, control names and labels, canonical URLs, duplicate IDs, internal links and anchors, and assets. Temporary package fixtures exercise missing entries, unknown manifest keys, traversal and symlink escapes, invalid versions, conflicting identities, unsafe documentation URLs, and missing local resources. Rendering escapes raw README HTML.
 
 These checks **do not execute Luau or prove runtime loading**. They never download or execute an external plugin. Real Tern acceptance is separate and belongs in a deliberately isolated environment, below.
 
@@ -83,6 +83,11 @@ Expected observations: the first open adds exactly one shell pane on the right; 
 When finished, `tern ctl --control "$TERN_BAZAAR_TEST_DIR/control.sock" quit` closes the isolated window. An isolated daemon may remain; stop only the process associated with your test socket before removing the temporary directory. Do not stop the user's normal daemon. Exit the shell/subshell to discard the exported environment. The linked package remains only in the temporary config directory.
 
 **Do not substitute `tern serve` or `tern shot` for this runtime check.** Headless runs disable ordinary plugins. `plugins fixtures` loads Tern's own source-tree test fixtures, not this package. This limitation and `plugins run` are documented in the [debugging guide](https://docs.stencil.so/tern/guides/debugging.md), [scripts guide](https://docs.stencil.so/tern/scripts/index.md), and [directory reference](https://docs.stencil.so/tern/concepts/packages.md#directories).
+
+### Runtime verification
+
+Sidecar 1.0.0 was exercised in an isolated Tern 0.9.9 window on macOS. Opening a sidecar changed the pane count from one to two; switching changed focus back to the source; opening again reused the same companion. Closing the companion, reopening below, and closing the source all cleared pairing state correctly. Installation from the public GitHub subdirectory also succeeded. This does not establish runtime testing on Windows, Linux, or iOS.
+
 
 ## Add or change a plugin
 
