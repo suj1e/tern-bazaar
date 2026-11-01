@@ -1,0 +1,47 @@
+name: Finalize HTTPS
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_run:
+    workflows: ['Check and publish Pages']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+
+concurrency:
+  group: pages-https
+  cancel-in-progress: false
+
+jobs:
+  enforce:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable HTTPS when GitHub has issued the certificate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state=$(gh api "repos/$GH_REPO/pages")
+          if jq -e '.https_enforced == true' <<< "$state" > /dev/null; then
+            echo 'HTTPS is already enforced.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          certificate=$(jq -r '.https_certificate.state // "pending"' <<< "$state")
+          case "$certificate" in
+            issued|uploaded|approved)
+              gh api "repos/$GH_REPO/pages" --method PUT -F https_enforced=true
+              gh api "repos/$GH_REPO/pages" --jq '.https_enforced' | jq -e '. == true'
+              echo 'HTTPS is now enforced.' >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "HTTPS is not enforced yet. GitHub certificate state: $certificate. The scheduled workflow will check again after issuance." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+          esac

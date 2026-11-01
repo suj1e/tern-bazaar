@@ -105,6 +105,8 @@ The workflow uses Node 22, `npm ci`, metadata/DOM tests, and a static build. Pul
 
 Repository settings must enable GitHub Pages with **GitHub Actions**, set the custom domain to `ternbazaar.beer`, and point that domain's DNS to GitHub Pages. DNS and GitHub account settings are external prerequisites, not handled by the static build. Enable HTTPS when GitHub's certificate is ready.
 
+The separate **Finalize HTTPS** workflow runs after successful Pages deployments, hourly, and on manual dispatch. It enables HTTPS only after GitHub reports an issued certificate, verifies the saved setting, and records pending issuance in its job summary. It needs only the repository's scoped GitHub token, not DNS credentials, and makes no changes when HTTPS is already enforced.
+
 ## Design decisions
 
 Tern Bazaar is the sea-glass sibling of [omp Bazaar](https://ompbazaar.beer): deep blue `#101c38`, layered blue `#17234d`, clear text `#eff2fa`, muted text `#a4aec5`, and sea glass `#a5d9cd`. Iowan Old Style / Palatino / Georgia carry the spacious, left-aligned headlines; system sans keeps working text clear. A gently tilted two-pane workspace is the one expressive motif. The collection is an editorial list, not a fabricated wall of inventory cards. Twenty-six restrained canvas lights pause in hidden tabs, cap device pixel ratio, and turn off for reduced motion. Search and filters update without animation, keyboard focus is visible, and copy operations report both success and failure.
